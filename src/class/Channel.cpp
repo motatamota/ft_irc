@@ -239,7 +239,7 @@ ChannelResult	Channel::ChangeChannelMode(int player_fd, const std::string& mode,
 	if (box.size() > 0)
 		return (create_code_message(ERR_UNKNOWNMODE, mode));
 
-	if (valid)
+ 	if (valid)
 	{
 		if (mod & MOD_INVITE)
 			channels_[channel_str].is_invite = true;
@@ -266,7 +266,23 @@ ChannelResult	Channel::ChangeChannelMode(int player_fd, const std::string& mode,
 			channels_[channel_str].limit_member = num;
 		}
 		if (mod & MOD_OPERATOR)
+		{
+			IntrusivePtr<Everyone> tmp = Everyone::GetInstance();
+			if (!tmp->ExistUserNick(key))
+				return (create_code_message(ERR_NOSUCHNICK, key));
+			if (!tmp->IsRegister(player_fd))
+				return (create_code_message(ERR_NOTREGISTERED));
+			if (!ExistChannel(channel_str))
+				return (create_code_message(ERR_NOSUCHCHANNEL, channel_str));
+			if (!tmp->IsAdmin(player_fd) && !IsJoined(player_fd, channel_str))
+				return (create_code_message(ERR_NOTONCHANNEL, channel_str));
+			if (!IsOperator(player_fd, channel_str))
+				return (create_code_message(ERR_CHANOPRIVSNEEDED, channel_str));
+			if (!IsJoined(tmp->GetUserIdNick(key), channel_str))
+				return (create_code_message(ERR_NOSUCHNICK, key));
 			ChangeOperator(player_fd, key, channel_str, 1);
+		}
+			// ChangeOperator(player_fd, key, channel_str, 1);
 	}
 	else
 	{
@@ -282,7 +298,23 @@ ChannelResult	Channel::ChangeChannelMode(int player_fd, const std::string& mode,
 		if (mod & MOD_LIMITED)
 			channels_[channel_str].is_limit = false;
 		if (mod & MOD_OPERATOR)
+		{
+			IntrusivePtr<Everyone> tmp = Everyone::GetInstance();
+			if (!tmp->ExistUserNick(key))
+				return (create_code_message(ERR_NOSUCHNICK, key));
+			if (!tmp->IsRegister(player_fd))
+				return (create_code_message(ERR_NOTREGISTERED));
+			if (!ExistChannel(channel_str))
+				return (create_code_message(ERR_NOSUCHCHANNEL, channel_str));
+			if (!tmp->IsAdmin(player_fd) && !IsJoined(player_fd, channel_str))
+				return (create_code_message(ERR_NOTONCHANNEL, channel_str));
+			if (!IsOperator(player_fd, channel_str))
+				return (create_code_message(ERR_CHANOPRIVSNEEDED, channel_str));
+			if (!IsJoined(tmp->GetUserIdNick(key), channel_str))
+				return (create_code_message(ERR_NOSUCHNICK, key));
 			ChangeOperator(player_fd, key, channel_str, 0);
+		}
+			// ChangeOperator(player_fd, key, channel_str, 0);
 	}
 
 	std::string mode_m;
