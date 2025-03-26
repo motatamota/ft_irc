@@ -57,7 +57,7 @@ ChannelResult	Everyone::DeleteUser(int player_fd)
 	std::set<std::string> copy = tmp->join_channel;
 	for (std::set<std::string>::iterator i = copy.begin(); i != copy.end(); i++)
 		channel->LeaveChannel(player_fd, *i);
-	if (everyone_id_[player_fd]->nick_name.size()) 
+	if (everyone_id_[player_fd]->nick_name.size())
 	{
 		nick_list_.erase(everyone_id_[player_fd]->nick_name.back());
 		everyone_nickname_.erase(everyone_id_[player_fd]->nick_name.back());
@@ -100,12 +100,8 @@ ChannelResult	Everyone::SetUser(int player_fd, const std::string &username, cons
 	{
 		return (ChannelResult(FATAL, ""));
 	}
-	// user,nick登録済み、passなしの場合はエラー
-	// nick未登録の場合はスルー（pass拘らず）
-	// それ以外の場合はwelcome
 	if (everyone_id_[player_fd]->level[NICK] && !everyone_id_[player_fd]->level[REGISTER])
 	{
-		// TODO 切断動作をする
 		return ChannelResult(-1, "ERROR: Access denied: Bad password?");
 	}
 	everyone_id_[player_fd]->user_name = username;
@@ -114,15 +110,12 @@ ChannelResult	Everyone::SetUser(int player_fd, const std::string &username, cons
 	everyone_id_[player_fd]->real_name = realname;
 	everyone_username_[username] = everyone_id_[player_fd];
 	if (!everyone_id_[player_fd]->level[NICK]) {
-		// welcome message前のバリデーション
 		everyone_id_[player_fd]->level[USER] = 1;
 		return ChannelResult(RPL_NOSEND, "No need to reply");
 	} else if (!everyone_id_[player_fd]->level[USER]) {
-		// Welcomeメッセージ送信
 		everyone_id_[player_fd]->level[USER] = 1;
 		return (create_code_message(1));
 	}
-	// このreturnが走ることはない
 	return ChannelResult(RPL_NOSEND, "No need to reply");
 }
 
@@ -144,11 +137,8 @@ ChannelResult	Everyone::SetNickname(int player_fd, const std::string &nickname)
 
 	if (everyone_id_[player_fd]->level[USER] && !everyone_id_[player_fd]->level[REGISTER])
 	{
-		// TODO 切断動作をする
-		// welcome message前のバリデーション
 		return ChannelResult(-1, "ERROR: Access denied: Bad password?");
 	}
-	// ニックネームを変更する場合は既存の値を削除する
 	if (everyone_id_[player_fd]->nick_name.size() > 0)
 	{
 		nick_list_.erase(everyone_id_[player_fd]->nick_name.back());
@@ -157,11 +147,9 @@ ChannelResult	Everyone::SetNickname(int player_fd, const std::string &nickname)
 	everyone_id_[player_fd]->nick_name.push_back(nickname);
 	everyone_nickname_[nickname] = everyone_id_[player_fd];
 	if (!everyone_id_[player_fd]->level[USER]) {
-		// welcome message前のバリデーション
 		everyone_id_[player_fd]->level[NICK] = 1;
 		return ChannelResult(RPL_NOSEND, "No need to reply");
 	} else if (!everyone_id_[player_fd]->level[NICK]) {
-		// Welcomeメッセージ送信
 		everyone_id_[player_fd]->level[NICK] = 1;
 		return (create_code_message(1));
 	}

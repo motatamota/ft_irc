@@ -199,9 +199,6 @@ void MessageTranslator::Pong(std::vector<std::string> av, int player_fd)
 
 void	MessageTranslator::Unknown(std::vector<std::string> av, int player_fd)
 {
-	// if (user_->IsCreated(player_fd))
-	// 	sender_.SendMessage(create_code_message(ERR_UNKNOWNCOMMAND, av[0]), player_fd);
-	// CAP LS時点ではユーザー作成されていないがunknownコマンドが来るので、コメントアウト
 	sender_.SendMessage(create_code_message(ERR_UNKNOWNCOMMAND, av[0]), player_fd);
 }
 
@@ -258,7 +255,6 @@ void	MessageTranslator::Nick(std::vector<std::string> av, int player_fd)
 
 void	MessageTranslator::User(std::vector<std::string> av, int player_fd)
 {
-	// すでに登録が済んでいる場合はsyntax errorとかのバリデーション通さずに返す
 	if (user_->IsRegisterUser(player_fd))
 	{
 		sender_.SendMessage(create_code_message(ERR_ALREADYREGISTRED), player_fd);
@@ -269,7 +265,6 @@ void	MessageTranslator::User(std::vector<std::string> av, int player_fd)
 		sender_.SendMessage(create_code_message(ERR_NEEDMOREPARAMS, "USER"), player_fd);
 		return ;
 	}
-	// TODO 無効な文字がオプションに入ってきた時の対策
 	ChannelResult result = user_->SetUser(player_fd, av[1], av[2], av[3], av[4]);
 	if (result.first == RPL_NOSEND)
 	{

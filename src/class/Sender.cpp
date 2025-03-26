@@ -29,11 +29,9 @@ std::string Sender::createResponse(ChannelResult &result, int fd) const
 	if (result.first != -1)
 	{
 		std::cout << "result: " << result.second << std::endl;
-		// std::cerr << "ChannelResult: " << result.first << ", " << result.second << std::endl;//デバッグ用
 		ss << ":ft_irc " << std::setw(3) << std::setfill('0') << result.first;
 		if ((result.first != 451 && result.first != 464) && (result.second.find("PASS") == std::string::npos))
 		{
-			// unknown command時にニックネームがない可能性があるため
 			if (user_->IsRegisterNick(fd))
 			{
 				ss << " " << user_->GetSomeone(fd).nick_name.back();
@@ -58,7 +56,6 @@ ssize_t Sender::sendResponse(std::string &response, int fd) const
 {
     ssize_t bytes_sent = 0;
     size_t total_len = response.length();
-	// 一回のメッセージ送信で全て送れるとは限らないらしく、送れるまでループ
     while (bytes_sent < static_cast<ssize_t>(total_len))
     {
         ssize_t sent = send(fd, response.c_str() + bytes_sent, total_len - bytes_sent, 0);
@@ -80,7 +77,6 @@ void	Sender::SendMessage(ChannelResult result, int fd) const
 		return ;
 	}
     std::string response = createResponse(result, fd);
-	// デバッグ用メッセージ
     std::cerr << "Message: " << response;
 	sendResponse(response, fd);
 }
