@@ -428,16 +428,6 @@ void	MessageTranslator::Invite(std::vector<std::string> av, int player_fd)
 	}
 	sender_.SendMessage(tmp, player_fd);
 	sender_.SendMessage(ChannelResult(-1, user_->GetSomeone(player_fd).nick_name.back() + " INVITE " + av[1] + " :" + av[2]), user_->GetUserIdNick(av[1]));
-	if (channel_->GetChannelInfo(av[2]).topic != "")
-	{
-		sender_.SendMessage(create_code_message(RPL_TOPIC, av[2], channel_->GetChannelInfo(av[2]).topic), player_fd);
-		return ;
-	}
-	sender_.SendMessage(create_code_message(RPL_NOTOPIC, av[2]), player_fd);
-	Sender sender;
-	std::string str = ":" + av[1] + " JOIN :" + av[2];
-	for (std::set<int>::iterator it = channel_->GetChannelInfo(av[2]).joined_player.begin(); it != channel_->GetChannelInfo(av[2]).joined_player.end(); it++)
-		sender.SendMessage(ChannelResult(-1, str), *it);
 }
 
 void	MessageTranslator::Kick(std::vector<std::string> av, int player_fd)
