@@ -363,7 +363,7 @@ ChannelResult Channel::SendMessageToChannel(int player_fd, const std::string& ch
 			if (*it != player_fd)
 				sender.SendMessage(create_code_message(RPL_AWAY, ":" + eve->GetSomeone(player_fd).nick_name.back() + " PRIVMSG " + channel_str, message), *it);
 		}
-		return (create_code_message(RPL_AWAY, ":" + eve->GetSomeone(player_fd).nick_name.back() + " PRIVMSG :" + channel_str, message));
+		return (create_code_message(RPL_AWAY, ":" + eve->GetSomeone(player_fd).nick_name.back() + " PRIVMSG " + channel_str, message));
 	}
 
 	if (!eve->ExistUserNick(channel_str))
