@@ -237,9 +237,19 @@ void	MessageTranslator::Nick(std::vector<std::string> av, int player_fd)
 		sender_.SendMessage(create_code_message(ERR_NONICKNAMEGIVEN, "NICK"), player_fd);
 		return ;
 	}
+	std::string oldnick;
+	if (user_->IsRegisterNick(player_fd))
+		oldnick = user_->GetSomeone(player_fd).nick_name.back();
 	ChannelResult result = user_->SetNickname(player_fd, av[1]);
 	if (result.first == RPL_NOSEND)
 	{
+		if (oldnick != "")
+		{
+			ChannelResult tmp;
+			tmp.first = -1;
+			tmp.second = ":" + oldnick + " NICK :" + av[1];
+			sender_.SendMessage(tmp, player_fd);
+		}
 		return ;
 	}
 	sender_.SendMessage(result, player_fd);
