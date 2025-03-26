@@ -447,6 +447,8 @@ void	MessageTranslator::Kick(std::vector<std::string> av, int player_fd)
 		sender_.SendMessage(create_code_message(ERR_NEEDMOREPARAMS, "KICK"), player_fd);
 		return ;
 	}
+	if (player_fd == user_->GetUserIdNick(av[2]))
+		return ;
 	ChannelResult tmp;
 	if (av.size() == 3)
 		tmp = channel_->KickChannel(player_fd, av[2], av[1]);

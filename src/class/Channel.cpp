@@ -368,8 +368,8 @@ ChannelResult Channel::SendMessageToChannel(int player_fd, const std::string& ch
 
 	if (!eve->ExistUserNick(channel_str))
 		return (create_code_message(ERR_NOSUCHNICK, channel_str));
-	sender.SendMessage(create_code_message(RPL_AWAY, ":" + eve->GetSomeone(player_fd).nick_name.back() + " PRIVMSG :" + channel_str, message), eve->GetUserIdNick(channel_str));
-	return (create_code_message(RPL_AWAY, ":" + eve->GetSomeone(player_fd).nick_name.back() + " PRIVMSG :" + channel_str, message));
+	sender.SendMessage(create_code_message(RPL_AWAY, ":" + eve->GetSomeone(player_fd).nick_name.back() + " PRIVMSG " + channel_str, message), eve->GetUserIdNick(channel_str));
+	return (create_code_message(RPL_AWAY, ":" + eve->GetSomeone(player_fd).nick_name.back() + " PRIVMSG " + channel_str, message));
 }
 
 bool	Channel::ExistChannel(const std::string& channel_str) const
