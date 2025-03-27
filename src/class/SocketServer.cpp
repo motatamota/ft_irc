@@ -59,9 +59,10 @@ void SocketServer::handleNewConnection() {
 	pfd.events = POLLIN;
 	pfd.revents = 0;
 	poll_fds_.push_back(pfd);
-
+#ifdef DEBUG
 	std::cout << "New client connected: " << inet_ntoa(client_addr.sin_addr)
 			  << ":" << ntohs(client_addr.sin_port) << "\n";
+#endif
 }
 
 std::string SocketServer::receiveMessage(int fd) {
@@ -88,7 +89,9 @@ std::string SocketServer::receiveMessage(int fd) {
             break;
         }
     }
+#ifdef DEBUG
     std::cout << "Received: " << message;
+#endif
     return message;
 }
 
@@ -157,8 +160,10 @@ void SocketServer::start() {
 		}
         for (std::vector<int>::reverse_iterator it = indices_to_remove.rbegin();
             it != indices_to_remove.rend(); ++it) {
+#ifdef DEBUG
             std::cout << "Client disconnected: FD " << poll_fds_[*it].fd << "\n";
             close(poll_fds_[*it].fd);
+#endif
             poll_fds_.erase(poll_fds_.begin() + *it);
         }
 	}

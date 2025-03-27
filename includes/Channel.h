@@ -63,6 +63,7 @@ public:
 	ChannelResult					ChangeChannelMode(int player_fd, const std::string& mode,
 										bool valid, const std::string& channel_str, std::string key = "");
 	ChannelResult					SendMessageToChannel(int player_fd, const std::string& channel_str, const std::string& message, const Sender& sender);
+	ChannelResult					NoticeToChannel(int player_fd, const std::string& channel_str, const std::string& message, const Sender& sender);
 	ChannelResult					ChangeOperator(int player_fd, std::string &focas_user_str, const std::string& channel_str, bool valid);
 	ChannelResult					GetTopic(const std::string& channel_str);
 	void							OutputLog();

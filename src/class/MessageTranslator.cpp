@@ -1,4 +1,5 @@
 #include "../../includes/MessageTranslator.h"
+#include "MessageTranslator.h"
 
 MessageTranslator::MessageTranslator()
 {
@@ -86,7 +87,9 @@ bool  MessageTranslator::hasCommand(std::string str)
 {
 	if (func_.find(str) == func_.end())
 	{
+#ifdef DEBUG
 		std::cout << "matched: " << str << std::endl;
+#endif
 		return false;
 	}
 	return true;
@@ -108,6 +111,7 @@ void	MessageTranslator::Execute(std::string message, int user_fd)
 		// user_->SetUser(user_fd, "admin", "admin", "admin", "admin");
 		tester_++;
 	}
+#ifdef DEBUG
 	if (box[0] == "ASKIP")
 	{
 		std::string tester("admin");
@@ -134,6 +138,7 @@ void	MessageTranslator::Execute(std::string message, int user_fd)
 		sender_.SendMessage(create_code_message(1), user_fd);
 		return ;
 	}
+#endif
 	if (!user_->IsRegisterAll(user_fd)) {
 		if (!hasCommand(box[0])) {
 			return ;
@@ -154,6 +159,9 @@ void	MessageTranslator::Execute(std::string message, int user_fd)
 	} else if (box[0] == "TOPIC")
 	{
 		Topic(box, user_fd, message);
+	} else if (box[0] == "NOTICE")
+	{
+		Notice(box, user_fd, message);
 	} else if (!hasCommand(box[0]))
 	{
 		return ((this->*(func_["UNKNOWN"]))(box, user_fd));
@@ -187,6 +195,7 @@ void MessageTranslator::Ping(std::vector<std::string> av, int player_fd)
 	pongMessage = ":" + serverName + " PONG " + serverName + " :" + server2;
 	sender_.SendMessage(ChannelResult(-1, pongMessage), player_fd);
 }
+
 void MessageTranslator::Pong(std::vector<std::string> av, int player_fd)
 {
 	if (av.size() < 2)
@@ -355,6 +364,32 @@ void MessageTranslator::Privmsg(std::vector<std::string> av, int player_fd, std:
 	while (std::getline(ss, tmp, ','))
 	{
 		result = channel_->SendMessageToChannel(player_fd, tmp, tmp2, sender_);
+		if (result.first != -1)
+			sender_.SendMessage(result, player_fd);
+	}
+}
+
+void MessageTranslator::Notice(std::vector<std::string> av, int player_fd, std::string str)
+{
+	if (av.size() == 1)
+	{
+		sender_.SendMessage(create_code_message(ERR_NORECIPIENT, "NOTICE"), player_fd);
+		return ;
+	}
+	if (av.size() == 2)
+	{
+		sender_.SendMessage(create_code_message(ERR_NOTEXTTOSEND), player_fd);
+		return ;
+	}
+
+	std::string tmp2 = str.substr(str.find(' ', str.find(' ') + 1) + 1);
+	IntrusivePtr<Everyone> eve = Everyone::GetInstance();
+	std::stringstream ss(av[1]);
+	std::string tmp;
+	ChannelResult result;
+	while (std::getline(ss, tmp, ','))
+	{
+		result = channel_->NoticeToChannel(player_fd, tmp, tmp2, sender_);
 		if (result.first != -1)
 			sender_.SendMessage(result, player_fd);
 	}

@@ -120,7 +120,6 @@ ChannelResult	Channel::JoinedChannel(int player_fd, const std::string& channel_s
 			return (create_code_message(ERR_CHANNELISFULL, channel_str));
 		if (tmp->GetSomeone(player_fd).join_channel.size() > 10)
 			return (create_code_message(ERR_TOOMANYCHANNELS, channel_str));
-		std::cout << channels_[channel_str].password << ", " << pass << std::endl;
 		if (channels_[channel_str].is_key && channels_[channel_str].password != pass)
 			return (create_code_message(ERR_BADCHANNELKEY, channel_str));
 	}
@@ -370,6 +369,32 @@ ChannelResult Channel::SendMessageToChannel(int player_fd, const std::string& ch
 		return (create_code_message(ERR_NOSUCHNICK, channel_str));
 	sender.SendMessage(create_code_message(RPL_AWAY, ":" + eve->GetSomeone(player_fd).nick_name.back() + " PRIVMSG " + channel_str, message), eve->GetUserIdNick(channel_str));
 	return (create_code_message(RPL_AWAY, ":" + eve->GetSomeone(player_fd).nick_name.back() + " PRIVMSG " + channel_str, message));
+}
+
+ChannelResult Channel::NoticeToChannel(int player_fd, const std::string &channel_str, const std::string &tmessage, const Sender &sender)
+{
+	IntrusivePtr<Everyone> eve = Everyone::GetInstance();
+	if (!eve->IsRegister(player_fd))
+		return (create_code_message(ERR_NOTREGISTERED));
+	const std::string& message = tmessage;
+	if (channel_str[0] == '#' || channel_str[0] == '&')
+	{
+		if (!ExistChannel(channel_str))
+			return (create_code_message(ERR_CANNOTSENDTOCHAN, channel_str));
+		if (!eve->IsAdmin(player_fd) && !IsJoined(player_fd, channel_str))
+			return (create_code_message(ERR_NOTONCHANNEL, channel_str));
+		for (std::set<int>::iterator it = channels_[channel_str].joined_player.begin(); it != channels_[channel_str].joined_player.end(); it++)
+		{
+			if (*it != player_fd)
+				sender.SendMessage(create_code_message(RPL_AWAY, ":" + eve->GetSomeone(player_fd).nick_name.back() + " NOTICE " + channel_str, message), *it);
+		}
+		return (create_code_message(RPL_AWAY, ":" + eve->GetSomeone(player_fd).nick_name.back() + " NOTICE " + channel_str, message));
+	}
+
+	if (!eve->ExistUserNick(channel_str))
+		return (create_code_message(ERR_NOSUCHNICK, channel_str));
+	sender.SendMessage(create_code_message(RPL_AWAY, ":" + eve->GetSomeone(player_fd).nick_name.back() + " NOTICE " + channel_str, message), eve->GetUserIdNick(channel_str));
+	return (create_code_message(RPL_AWAY, ":" + eve->GetSomeone(player_fd).nick_name.back() + " NOTICE " + channel_str, message));
 }
 
 bool	Channel::ExistChannel(const std::string& channel_str) const

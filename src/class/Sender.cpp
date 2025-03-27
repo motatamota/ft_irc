@@ -28,7 +28,9 @@ std::string Sender::createResponse(ChannelResult &result, int fd) const
 
 	if (result.first != -1)
 	{
+#ifdef DEBUG
 		std::cout << "result: " << result.second << std::endl;
+#endif
 		ss << ":ft_irc " << std::setw(3) << std::setfill('0') << result.first;
 		if ((result.first != 451 && result.first != 464) && (result.second.find("PASS") == std::string::npos))
 		{
@@ -77,6 +79,8 @@ void	Sender::SendMessage(ChannelResult result, int fd) const
 		return ;
 	}
     std::string response = createResponse(result, fd);
+#ifdef DEBUG
     std::cerr << "Message: " << response;
+#endif
 	sendResponse(response, fd);
 }

@@ -46,6 +46,7 @@ private:
 	void						Whois(std::vector<std::string>, int);
 	void						Pong(std::vector<std::string> av, int player_fd);
 	void						Ping(std::vector<std::string> av, int player_fd);
+	void						Notice(std::vector<std::string> av, int player_fd, std::string str);
 	// ChannelResult				Names(std::vector<std::string> av, int player_fd);
 	// ChannelResult				List(std::vector<std::string> av, int player_fd);
 	// ChannelResult				Version(std::vector<std::string> av, int player_fd);
@@ -60,7 +61,6 @@ private:
 	// ChannelResult				Admin(std::vector<std::string> av, int player_fd);
 	// ChannelResult				Info(std::vector<std::string> av, int player_fd);
 	// ChannelResult				Privmsg(std::vector<std::string> av, int player_fd);
-	// ChannelResult				Notice(std::vector<std::string> av, int player_fd);
 	// ChannelResult				Who(std::vector<std::string> av, int player_fd);
 	// ChannelResult				Whois(std::vector<std::string> av, int player_fd);
 	// ChannelResult				Whowas(std::vector<std::string> av, int player_fd);
