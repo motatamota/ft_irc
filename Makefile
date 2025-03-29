@@ -9,8 +9,8 @@ SRCDIR := ./src
 CLASSDIR := class
 INCDIR := ./includes
 
-SRC := $(wildcard $(SRCDIR)/*.cpp)
-SRC += $(wildcard $(SRCDIR)/$(CLASSDIR)/*.cpp)
+SRC := $(SRCDIR)/main.cpp
+SRC += $(SRCDIR)/$(CLASSDIR)/Channel.cpp $(SRCDIR)/$(CLASSDIR)/ErrorCode.cpp $(SRCDIR)/$(CLASSDIR)/Everyone.cpp $(SRCDIR)/$(CLASSDIR)/MessageTranslator.cpp $(SRCDIR)/$(CLASSDIR)/RefCounted.cpp $(SRCDIR)/$(CLASSDIR)/Sender.cpp $(SRCDIR)/$(CLASSDIR)/SocketServer.cpp
 
 INCLUDES := -I$(INCDIR)
 
